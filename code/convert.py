@@ -651,13 +651,11 @@ def add_index(zipcodes, metadata_list, openei_tariff_row):
     return tariff
 
 
-def main(savefolder="data/converted/", metadata_path="data/converted/metadata.csv"):
-    os.chdir(os.path.dirname(os.path.dirname(__file__)))
-
+def main(savefolder="data/converted/", suffix=""):
     zipcodes_path = "data/filtered/merged_zipcodes.csv"
     zipcodes = pd.read_csv(zipcodes_path, low_memory=False)
 
-    openei_path ="data/filtered/usurdb_filtered.csv"
+    openei_path ="data/filtered/usurdb" + suffix + ".csv"
     openei_df = pd.read_csv(openei_path, low_memory=False)
     openei_df["sourceparent"] = openei_df["sourceparent"].fillna("")
 
@@ -693,14 +691,8 @@ def main(savefolder="data/converted/", metadata_path="data/converted/metadata.cs
     metadata_df = pd.DataFrame(metadata_list)
     # order the columns
     metadata_df = metadata_df[["label", "eiaid", "name", "utility", "source", "zipcode", "state","notes"]]
-    metadata_df.to_csv(metadata_path, index=False)
+    metadata_df.to_csv("data/converted/metadata"+ suffix + ".csv", index=False)
 
 if __name__ == "__main__":
-    main(
-        savefolder="data/converted/bundled/", 
-        metadata_path="data/converted/metadata_bundled.csv"
-    )
-    main(
-        savefolder="data/converted/delivery_only/", 
-        metadata_path="data/converted/metadata_delivery_only.csv"
-    )
+    main(savefolder="data/converted/bundled/", suffix="_bundled")
+    main(savefolder="data/converted/delivery_only/", suffix="_delivery_only")
