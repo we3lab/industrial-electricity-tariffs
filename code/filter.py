@@ -32,6 +32,12 @@ def filter_tariffs(
 
 
 def main():
+    iou_filename = os.path.join("data", "raw", "iou_zipcodes_2020.csv")
+    non_iou_filename = os.path.join("data", "raw", "non_iou_zipcodes_2020.csv")
+    iou_zips = pd.read_csv(iou_filename)
+    non_iou_zips = pd.read_csv(non_iou_filename)
+    merged_outpath = os.path.join("data", "filtered", "merged_zipcodes.csv")
+    pd.concat([iou_zips, non_iou_zips]).to_csv(merged_outpath, index=False)
     filter_tariffs(
         allowed_service_types=["Bundled", "Delivery with Standard Offer"],
         outpath="data/filtered/usurdb_bundled.csv"

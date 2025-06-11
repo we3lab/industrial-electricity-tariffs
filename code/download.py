@@ -1,6 +1,7 @@
 import os
 import gzip
 import shutil
+import pandas as pd
 from urllib.request import urlretrieve
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -17,7 +18,10 @@ with gzip.open(filename, 'rb') as f_in:
     with open(outpath, 'wb') as f_out:
         shutil.copyfileobj(f_in, f_out)
 
-# TODO: What is the original source of merged_zipcodes.csv ?
-# for now I just archived the CSV from the other repo
-# https://data.openei.org/files/5650/iou_zipcodes_2020.csv
-# https://data.openei.org/files/5650/non_iou_zipcodes_2020.csv
+iou_url = "https://data.openei.org/files/5650/iou_zipcodes_2020.csv"
+iou_filename = os.path.join("data", "raw", "iou_zipcodes_2020.csv")
+urlretrieve(iou_url, iou_filename)
+
+non_iou_url = "https://data.openei.org/files/5650/non_iou_zipcodes_2020.csv"
+non_iou_filename = os.path.join("data", "raw", "non_iou_zipcodes_2020.csv")
+urlretrieve(non_iou_url, non_iou_filename)
