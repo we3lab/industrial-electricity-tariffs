@@ -7,21 +7,21 @@ on:
 
 jobs:
   setup:
-  steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.13
-      - name: Install Pandas
-        run: pip install pandas
-      - name: Download Raw Data
-        run: python code/download.py
-      - name: Filter by Sector, Service Type
-        run: python code/filter.py
-      - name: Convert to Our Format
-        run: python code/convert.py
-      - name: Validate Output
-        run: python code/validate.py
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.13
+    - name: Install Pandas
+      run: pip install pandas
+    - name: Download Raw Data
+      run: python code/download.py
+    - name: Filter by Sector, Service Type
+      run: python code/filter.py
+    - name: Convert to Our Format
+      run: python code/convert.py
+    - name: Validate Output
+      run: python code/validate.py
 
 # TODO: add release function
