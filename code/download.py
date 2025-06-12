@@ -13,7 +13,7 @@ filename = os.path.join("data", "raw", "usurdb_raw.csv.gz")
 outpath = os.path.join("data", "raw", "usurdb_raw.csv")
 urlretrieve(url, filename)
 
-# From XX
+# From https://stackoverflow.com/questions/31028815/how-to-unzip-gz-file-using-python
 with gzip.open(filename, 'rb') as f_in:
     with open(outpath, 'wb') as f_out:
         shutil.copyfileobj(f_in, f_out)
@@ -25,3 +25,5 @@ urlretrieve(iou_url, iou_filename)
 non_iou_url = "https://data.openei.org/files/5650/non_iou_zipcodes_2020.csv"
 non_iou_filename = os.path.join("data", "raw", "non_iou_zipcodes_2020.csv")
 urlretrieve(non_iou_url, non_iou_filename)
+
+# TODO: incorporate tariffs from https://github.com/we3lab/wwtp-energy-tariffs

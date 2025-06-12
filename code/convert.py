@@ -3,6 +3,7 @@ import ast
 import math
 import numpy as np
 import pandas as pd
+import pgeocode as pg
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -25,7 +26,7 @@ MONTHS = {
     "dec": 12,
 }
 
-state_abbr = {
+STATE_ABBR = {
     "Alabama": "AL",
     "Alaska": "AK",
     "Arizona": "AZ",
@@ -581,15 +582,16 @@ def sector_filter(acceptable_sectors, openei_tariff_row):
         return True
     return False
 
-def generate_metadata(openei_tariff_row, eia_zipcode_database, state_abbr):
-    """
-    Generates a metadata dictionary for the tariff sheet/openei index
+def generate_metadata(openei_tariff_row, eia_zipcode_database, state_abbr=STATE_ABBR):
+    """Generates a metadata dictionary for the tariff sheet/openei index.
+
     Parameters
     ----------
     openei_tariff_row : pandas.DataFrame
         A row of the original data from OpenEI's utility rate database.
     eia_zipcode_database : pandas.DataFrame
         The dataframe of zipcodes mapping to EIA IDs.
+
     Returns
     -------
     metadata : dict
@@ -651,6 +653,44 @@ def add_index(zipcodes, metadata_list, openei_tariff_row):
     return tariff
 
 
+def get_lat_long(zipcode):
+    """Get the latitude and longitude of the postal code and add it as a column
+    
+    Parameters
+    ----------
+    zipcode : str
+        ZIP code as a string
+
+    nomi : 
+
+    Returns
+    -------
+    float, float
+        Latitude and longitude as a tuple
+    """
+    nomi = pg.Nominatim('us')
+
+    # check if zipcode is a 5 digit number
+    if pd.isna(zipcode):
+        zipcode = "NaN"
+    else:
+        zipcode = str(int(zipcode))
+        if len(zipcode) != 5:
+            # add a zero to the end of the zipcode
+            zipcode = '0' + zipcode
+    
+    obj = nomi.query_postal_code(zipcode)
+    if obj.latitude is None or np.isnan(obj.latitude):
+        print(f"Error with zipcode {zipcode}")
+        return None, None
+    elif obj.longitude is None or np.isnan(obj.longitude):
+        print(f"Error with zipcode {zipcode}")
+        return None, None
+    else:
+        pass
+    return obj.latitude, obj.longitude
+
+
 def main(savefolder="data/converted/", suffix=""):
     zipcodes_path = "data/filtered/merged_zipcodes.csv"
     zipcodes = pd.read_csv(zipcodes_path, low_memory=False)
@@ -664,16 +704,12 @@ def main(savefolder="data/converted/", suffix=""):
     
     metadata_list = []
 
-    # for each row of openei_df - build the tariff sheet, find the metadata and produce a metadata row
+    # for each row of openei_df 
+    # (1) build the tariff sheet
+    # (2) find the metadata and produce a metadata row
     for i in range(len(openei_df)):
         openei_tariff_row = openei_df.iloc[i]
-        # # check if the utility is in the top utilities list
-        # if openei_tariff_row["utility"] not in top_utils["Name"].values:
-        #     continue
 
-        # add the index to indexes
-        # tariff = add_index(zipcodes, metadata_list, openei_tariff_row)
-        
         # process the tariff
         tariff = add_index([], [], openei_tariff_row)
         tariff_df = pd.DataFrame(tariff)
@@ -681,16 +717,39 @@ def main(savefolder="data/converted/", suffix=""):
         tariff_df.to_csv(savefolder + f"{label}.csv", index=False)
 
         # create a row for the metadata
-        metadata_row = generate_metadata(openei_tariff_row, zipcodes, state_abbr)
-
+        metadata_row = generate_metadata(openei_tariff_row, zipcodes)
+        metadata_row["latitude"], metadata_row["longitude"] = get_lat_long(
+            metadata_row["zipcode"]
+        )
+        if pd.isna(metadata_row["state"]):
+            print(f"'state' is NaN for {label}")
+            for key in STATE_ABBR.keys():
+                if key in metadata_row["utility"]:
+                    metadata_row["state"] = STATE_ABBR[key]
+                    print(f"Found 'state'={STATE_ABBR[key]} in 'utility'={metadata_row['utility']}")
+                    break
         metadata_list.append(metadata_row)
 
         print(f"Saved {label} to {savefolder}")
     
     # save the metadata
     metadata_df = pd.DataFrame(metadata_list)
+
     # order the columns
-    metadata_df = metadata_df[["label", "eiaid", "name", "utility", "source", "zipcode", "state","notes"]]
+    metadata_df = metadata_df[
+        [
+            "label", 
+            "eiaid", 
+            "name", 
+            "utility", 
+            "source", 
+            "zipcode", 
+            "state", 
+            "latitude", 
+            "longitude", 
+            "notes",
+        ]
+    ]
     metadata_df.to_csv("data/converted/metadata"+ suffix + ".csv", index=False)
 
 if __name__ == "__main__":
