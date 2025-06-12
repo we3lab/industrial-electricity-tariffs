@@ -208,6 +208,10 @@ def process_customer(openei_tariff_row):
     list
         The list of dictionaries for the tariff file with the processed customer monthly rate.
     """
+    if pd.isna(openei_tariff_row["fixedchargefirstmeter"]):
+        customer_charge = 0
+    else:
+        customer_charge = openei_tariff_row["fixedchargefirstmeter"]
     data_dict = make_dict()
     data_dict["label"] = openei_tariff_row["label"]
     data_dict["utility"] = "electric"
@@ -222,8 +226,8 @@ def process_customer(openei_tariff_row):
     data_dict["hour_end"] = ""
     data_dict["weekday_start"] = ""
     data_dict["weekday_end"] = ""
-    data_dict["charge (imperial)"] = openei_tariff_row["fixedchargefirstmeter"]
-    data_dict["charge (metric)"] = openei_tariff_row["fixedchargefirstmeter"]
+    data_dict["charge (imperial)"] = customer_charge
+    data_dict["charge (metric)"] = customer_charge
     data_dict["units"] = "$/month"
     data_dict["Notes"] = str(openei_tariff_row["source"]) + (
         "\t" + str(openei_tariff_row["sourceparent"]) if openei_tariff_row["sourceparent"] != "" else ""
