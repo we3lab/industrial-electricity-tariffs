@@ -50,11 +50,13 @@ def main():
     pd.concat([iou_zips, non_iou_zips]).to_csv(merged_outpath, index=False)
     filter_tariffs(
         allowed_service_types=["Bundled", "Delivery with Standard Offer"],
-        outpath="data/filtered/usurdb_bundled.csv"
+        outpath="data/filtered/usurdb_bundled.csv",
+        # date_cutoff=datetime.datetime(2023, 6, 1)
     )
     filter_tariffs(
         allowed_service_types=["Delivery"],
-        outpath="data/filtered/usurdb_delivery_only.csv"
+        outpath="data/filtered/usurdb_delivery_only.csv",
+        # date_cutoff=datetime.datetime(2023, 6, 1)
     )
 
 

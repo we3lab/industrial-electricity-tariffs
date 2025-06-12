@@ -11,10 +11,10 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MAX_CHARGES = {
     "electric_demand": 100, 
     "electric_energy": 2,
-    "electric_customer": 5000,
+    "electric_customer": 15000,
     "gas_energy": 3,
     "gas_demand": 40, 
-    "gas_customer": 5000,
+    "gas_customer": 15000,
 }
 
 def check_continuity(df, charge_type):
@@ -122,11 +122,11 @@ def validate_tariff(tariff_df, tariff_id, max_charges=MAX_CHARGES):
 def validate_tariffs(
     savefolder="data/validated/bundled/", 
     datafolder="data/converted/bundled/", 
-    metadatafolder="data/converted/", 
     suffix=""
 ):
     reject_tariffs = []
-    metadata_df = pd.read_csv(metadatafolder + "metadata" + suffix + ".csv")
+    metadatapath = os.path.dirname(os.path.dirname(datafolder)) + "/metadata" + suffix + ".csv"
+    metadata_df = pd.read_csv(metadatapath)
 
     if not os.path.exists(savefolder):
         os.mkdir(savefolder)
@@ -148,17 +148,17 @@ def validate_tariffs(
     # save reject_tariffs list in data/validated folder with suffix
     pd.DataFrame({"tariff_id": reject_tariffs}).to_csv("data/validated/rejected" + suffix + ".csv", index=False)
 
+    # copy metadata to data/validated folder
+    shutil.copyfile(metadatapath, os.path.dirname(os.path.dirname(savefolder)) + "/metadata" + suffix + ".csv")
 
 if __name__ == "__main__":
     validate_tariffs(
         savefolder="data/validated/bundled/", 
         datafolder="data/converted/bundled/",
-        metadatafolder="data/converted/", 
         suffix="_bundled"
     )
     validate_tariffs(
         savefolder="data/validated/delivery_only/",
         datafolder="data/converted/delivery_only/",
-        metadatafolder="data/converted/", 
         suffix="_delivery_only"
     )

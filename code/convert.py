@@ -343,8 +343,7 @@ def process_flat_demand(openei_tariff_row):
 def unpack_array(
     lst, sched, string, units, tariff_type, week_start, week_end, openei_tariff_row
 ):
-    """
-    Produces tariff rates for rates where temporal data is stored in nested lists
+    """Produces tariff rates for rates where temporal data is stored in nested lists
 
     Parameters
     ----------
@@ -362,8 +361,6 @@ def unpack_array(
         The numeric value for the start day of the week where the tariff is in effect.
     week_end : int
         The numeric value for the end day of the week where the tariff is in effect.
-    tariff : list
-        The list of dictionaries for the tariff file.
     openei : pandas.DataFrame
         The original data from OpenEI's utility rate database.
 
@@ -379,8 +376,8 @@ def unpack_array(
     """
     day_index = 0
     hour_index = 0
-    tier_index = 0
     charge_limit = 0
+    tier_index_dict = {}
 
     hour_list = sched[lst[day_index][0]]  # month_lst is the current month looked at
     hour_ranges = find_consecutive_ranges(hour_list)  # processed month_lst
@@ -389,12 +386,14 @@ def unpack_array(
     dict_list = []
 
     while day_index < len(lst) and hour_index < len(hour_ranges):
-
+        if hour_list[hour] not in tier_index_dict:
+            tier_index_dict[hour_list[hour]] = 0
         data_dict = make_dict()
         try:
             # tier_str first to catch ValueErrors from null values in the dataframe
             tier_str = (
-                string + "/period" + str(hour_list[hour]) + "/tier" + str(tier_index)
+                string + "/period" + str(hour_list[hour]) 
+                + "/tier" + str(tier_index_dict[hour_list[hour]])
             )
             rate = openei_tariff_row[tier_str + "rate"]
         except (IndexError, ValueError, KeyError):
@@ -431,12 +430,12 @@ def unpack_array(
             + "/period"
             + str(hour_list[hour])
             + "/tier"
-            + str(tier_index)
+            + str(tier_index_dict[hour_list[hour]])
             + "max"
         )
         if not np.isnan(openei_tariff_row[max_str]):
             charge_limit = openei_tariff_row[max_str]
-            tier_index += 1
+            tier_index_dict[hour_list[hour]] += 1
         elif hour_index < len(hour_ranges) - 1:
             hour_index += 1
             charge_limit = 0
@@ -695,7 +694,7 @@ def get_lat_long(zipcode):
     return obj.latitude, obj.longitude
 
 
-def main(savefolder="data/converted/", suffix=""):
+def main(savefolder="data/converted/", suffix="", verbose=False):
     zipcodes_path = "data/filtered/merged_zipcodes.csv"
     zipcodes = pd.read_csv(zipcodes_path, low_memory=False)
 
@@ -734,7 +733,8 @@ def main(savefolder="data/converted/", suffix=""):
                     break
         metadata_list.append(metadata_row)
 
-        print(f"Saved {label} to {savefolder}")
+        if verbose:
+            print(f"Saved {label} to {savefolder}")
     
     # save the metadata
     metadata_df = pd.DataFrame(metadata_list)
