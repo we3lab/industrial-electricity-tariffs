@@ -1,6 +1,7 @@
 import os
 import shutil
 import warnings
+import traceback
 import pandas as pd
 
 # change to repo parent directory
@@ -93,22 +94,36 @@ def validate_tariff(tariff_df, tariff_id, max_charges=MAX_CHARGES):
         ).all() 
     except Exception as e:
         print(f"Error with {tariff_id}:", e)
+        traceback.print_exc()
         return False
 
     return True
 
-def validate_tariffs(savefolder="data/validated/", sourcefolder="data/converted/", suffix=""):
-    valid_tariffs = []
+def validate_tariffs(
+    savefolder="data/validated/bundled/", 
+    datafolder="data/converted/bundled/", 
+    metadatafolder="data/converted/", 
+    suffix=""
+):
     reject_tariffs = []
-    for tariff_id in tariff_ids:
-        sourcepath = sourcefolder + tariff_id + ".csv"
+    metadata_df = pd.read_csv(metadatafolder + "metadata" + suffix + ".csv")
+
+    if not os.path.exists(savefolder):
+        os.mkdir(savefolder)
+
+    print(f"Number of tariffs after conversion, but before validation: {len(metadata_df)}")
+
+    for tariff_id in metadata_df["label"]:
+        sourcepath = datafolder + tariff_id + ".csv"
         tariff_df = pd.read_csv(sourcepath)
         # copy valid_tariffs to data/validated folder with suffix
         if validate_tariff(tariff_df, tariff_id):
             outpath = savefolder + tariff_id + ".csv"
             shutil.copyfile(sourcepath, outpath)
         else:
-            rejected_tariffs.append(tariff_id)
+            reject_tariffs.append(tariff_id)
+
+    print(f"Number of tariffs after validation: {len(metadata_df) - len(reject_tariffs)}")
 
     # save reject_tariffs list in data/validated folder with suffix
     pd.DataFrame({"tariff_id": reject_tariffs}).to_csv("data/validated/rejected" + suffix + ".csv", index=False)
@@ -117,11 +132,13 @@ def validate_tariffs(savefolder="data/validated/", sourcefolder="data/converted/
 if __name__ == "__main__":
     validate_tariffs(
         savefolder="data/validated/bundled/", 
-        sourcefolder="data/converted/bundled/",
+        datafolder="data/converted/bundled/",
+        metadatafolder="data/converted/", 
         suffix="_bundled"
     )
     validate_tariffs(
         savefolder="data/validated/delivery_only/",
-        sourcefolder="data/converted/delivery_only/",
+        datafolder="data/converted/delivery_only/",
+        metadatafolder="data/converted/", 
         suffix="_delivery_only"
     )

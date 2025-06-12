@@ -11,7 +11,7 @@ def filter_tariffs(
 ):
     raw_tariff_list = pd.read_csv("data/raw/usurdb_raw.csv", )
     num_tariffs = len(raw_tariff_list)
-    print(f"Number of tariffs to start: {num_tariffs}")
+    print(f"Number of tariffs before filtering: {num_tariffs}")
 
     # filter by sector
     df = raw_tariff_list[raw_tariff_list['sector'].isin(['Industrial', 'Commercial'])]
