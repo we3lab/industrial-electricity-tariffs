@@ -2,11 +2,11 @@ name: Process Tariffs
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*.*.*"
 
 jobs:
-  setup:
+  process-and-publish:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.13
@@ -21,7 +21,31 @@ jobs:
       run: python code/filter.py
     - name: Convert to Our Format
       run: python code/convert.py
+    - name: Merge data from wwtp-energy-tariffs
+      run: python code/merge.py
     - name: Validate Output
       run: python code/validate.py
-
-# TODO: add release function
+    - name: Zip Files
+      uses: papeloto/action-zip@v1
+      with:
+        files: data/validated/
+        dest: data/industrial-electricity-tariffs.zip
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: data/industrial-electricity-tariffs.zip
+        asset_name: industrial-electricity-tariffs.zip
+        asset_content_type: application/zip

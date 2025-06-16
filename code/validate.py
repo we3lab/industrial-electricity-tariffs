@@ -155,7 +155,7 @@ if __name__ == "__main__":
     validate_tariffs(
         savefolder="data/validated/bundled/", 
         datafolder="data/converted/bundled/",
-        suffix="_bundled"
+        suffix="_merged"
     )
     validate_tariffs(
         savefolder="data/validated/delivery_only/",

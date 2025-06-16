@@ -26,4 +26,10 @@ non_iou_url = "https://data.openei.org/files/5650/non_iou_zipcodes_2020.csv"
 non_iou_filename = os.path.join("data", "raw", "non_iou_zipcodes_2020.csv")
 urlretrieve(non_iou_url, non_iou_filename)
 
-# TODO: incorporate tariffs from https://github.com/we3lab/wwtp-energy-tariffs
+# Incorporate tariffs from https://github.com/we3lab/wwtp-energy-tariffs
+xls_url = "https://raw.githubusercontent.com/we3lab/wwtp-energy-tariffs/main/data/WWTP_Billing.xlsx"
+xls_filename = os.path.join("data", "raw", "WWTP_Billing.xlsx")
+urlretrieve(xls_url, xls_filename)
+metadata_url = "https://raw.githubusercontent.com/we3lab/wwtp-energy-tariffs/main/data/metadata.csv"
+metadata_filename = os.path.join("data", "raw", "metadata.csv")
+urlretrieve(metadata_url, metadata_filename)
