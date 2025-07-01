@@ -6,7 +6,7 @@ from urllib.request import urlretrieve
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# This file is too large to be included on GitHub but can be found at 
+# This file is too large to be included on GitHub but can be found at
 # https://openei.org/wiki/Utility_Rate_Database
 url = "https://openei.org/apps/USURDB/download/usurdb.csv.gz"
 filename = os.path.join("data", "raw", "usurdb_raw.csv.gz")
@@ -14,8 +14,8 @@ outpath = os.path.join("data", "raw", "usurdb_raw.csv")
 urlretrieve(url, filename)
 
 # From https://stackoverflow.com/questions/31028815/how-to-unzip-gz-file-using-python
-with gzip.open(filename, 'rb') as f_in:
-    with open(outpath, 'wb') as f_out:
+with gzip.open(filename, "rb") as f_in:
+    with open(outpath, "wb") as f_out:
         shutil.copyfileobj(f_in, f_out)
 
 iou_url = "https://data.openei.org/files/5650/iou_zipcodes_2020.csv"
