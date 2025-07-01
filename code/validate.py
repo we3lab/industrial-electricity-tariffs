@@ -121,7 +121,7 @@ def validate_tariff(tariff_df, tariff_id, max_charges=MAX_CHARGES):
 
 def validate_tariffs(
     savefolder="data/validated/bundled/", 
-    datafolder="data/converted/bundled/", 
+    datafolder="data/merged/bundled/", 
     suffix=""
 ):
     reject_tariffs = []
@@ -154,8 +154,8 @@ def validate_tariffs(
 if __name__ == "__main__":
     validate_tariffs(
         savefolder="data/validated/bundled/", 
-        datafolder="data/converted/bundled/",
-        suffix="_merged"
+        datafolder="data/merged/bundled/",
+        suffix="_bundled"
     )
     validate_tariffs(
         savefolder="data/validated/delivery_only/",

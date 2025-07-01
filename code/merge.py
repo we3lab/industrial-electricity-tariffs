@@ -8,7 +8,7 @@ def long_str_to_float(long_str):
     long_str = "-" + long_str[:-1]
     return float(long_str[:-1])
 
-# copy tariffs to converted folder
+# copy tariffs to merged folder
 metadata_df = pd.read_csv(os.path.join("data", "raw", "metadata.csv"))
 new_metadata = []
 for cwns_no in metadata_df["CWNS_No"]:
@@ -18,7 +18,7 @@ for cwns_no in metadata_df["CWNS_No"]:
         sheet_name=str(cwns_no)
     )
     tariff_df.to_csv(
-        os.path.join("data", "converted", "bundled", f"{cwns_no}.csv"), 
+        os.path.join("data", "merged", "bundled", f"{cwns_no}.csv"), 
         index=False
     )
     new_entry = {
@@ -32,11 +32,11 @@ for cwns_no in metadata_df["CWNS_No"]:
     new_metadata.append(new_entry)
 
 # merge metadata
-new_metadata_df = pd.DataFrame(new_metadata)
 old_metadata_df = pd.read_csv(
     os.path.join("data", "converted", "metadata_bundled.csv")
 )
+new_metadata_df = pd.DataFrame(new_metadata)
 new_metadata_df = pd.concat([old_metadata_df, new_metadata_df])
 new_metadata_df.to_csv(
-    os.path.join("data", "converted", "metadata_merged.csv"), index=False
+    os.path.join("data", "merged", "metadata_bundled.csv"), index=False
 )
