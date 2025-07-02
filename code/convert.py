@@ -163,7 +163,7 @@ def process_demand_unit(charge, unit, charge_dict):
 
     Returns
     -------
-    dictionary
+    dict
         The dictionary for the tariff file with the processed demand unit.
     """
     if isinstance(unit, float) and math.isnan(unit):
@@ -191,7 +191,6 @@ def process_demand_unit(charge, unit, charge_dict):
         charge_dict["units"] = "$/kW"
         charge_dict["charge (imperial)"] = charge * HP_TO_KW_CONVERSION
         charge_dict["charge (metric)"] = charge * HP_TO_KW_CONVERSION
-
     return charge_dict
 
 
