@@ -1,5 +1,6 @@
 import os
 import pytest
+from code.convert import *
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 skip_all_tests = False
