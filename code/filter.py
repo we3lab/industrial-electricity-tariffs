@@ -6,6 +6,7 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def filter_tariffs(
+    allowed_sectors=["Industrial", "Commercial"],
     allowed_service_types=["Bundled", "Delivery with Standard Offer"],
     outpath="data/filtered/usurdb_filtered.csv",
     date_cutoff=datetime.datetime.today(),
@@ -17,7 +18,7 @@ def filter_tariffs(
     print(f"Number of tariffs before filtering: {num_tariffs}")
 
     # filter by sector
-    df = raw_tariff_list[raw_tariff_list["sector"].isin(["Industrial", "Commercial"])]
+    df = raw_tariff_list[raw_tariff_list["sector"].isin(allowed_sectors)]
     num_tariffs = len(df)
     print(
         f"Number of tariffs after filtering by sector (Industrial, Commercial): {num_tariffs}"
@@ -56,11 +57,13 @@ def main():
     merged_outpath = os.path.join("data", "filtered", "merged_zipcodes.csv")
     pd.concat([iou_zips, non_iou_zips]).to_csv(merged_outpath, index=False)
     filter_tariffs(
+        allowed_sectors=["Industrial", "Commercial"],
         allowed_service_types=["Bundled", "Delivery with Standard Offer"],
         outpath="data/filtered/usurdb_bundled.csv",
         # date_cutoff=datetime.datetime(2023, 6, 1)
     )
     filter_tariffs(
+        allowed_sectors=["Industrial", "Commercial"],
         allowed_service_types=["Delivery"],
         outpath="data/filtered/usurdb_delivery_only.csv",
         # date_cutoff=datetime.datetime(2023, 6, 1)
