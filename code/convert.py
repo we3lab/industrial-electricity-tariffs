@@ -83,7 +83,7 @@ STATE_ABBR = {
 
 def make_dict():
     """
-    creates a dictionary for the tariff file
+    Creates a dictionary for the tariff file
 
     Parameters
     ----------
@@ -231,7 +231,7 @@ def process_customer(openei_tariff_row):
     data_dict["units"] = "$/month"
     data_dict["Notes"] = str(openei_tariff_row["source"]) + (
         "\t" + str(openei_tariff_row["sourceparent"])
-        if openei_tariff_row["sourceparent"] != ""
+        if not (openei_tariff_row["sourceparent"] == "" or pd.isna(openei_tariff_row["sourceparent"]))
         else ""
     )
     return [data_dict]
@@ -574,27 +574,6 @@ def process_energy(openei_tariff_row):
     return dict_list_weekday
 
 
-def sector_filter(acceptable_sectors, openei_tariff_row):
-    """
-    Filter the openei dataframe based on the desired sector
-
-    Parameters
-    ----------
-    acceptable_sectors : str list
-        The list of sectors to filter by.
-    openei : pandas.DataFrame
-        The original data from OpenEI's utility rate database.
-
-    Returns
-    -------
-    bool
-        True if the sector fits within the list of acceptable sectors.
-    """
-    if openei_tariff_row["sector"] in acceptable_sectors:
-        return True
-    return False
-
-
 def generate_metadata(openei_tariff_row, eia_zipcode_database, state_abbr=STATE_ABBR):
     """Generates a metadata dictionary for the tariff sheet/openei index.
 
@@ -646,18 +625,14 @@ def generate_metadata(openei_tariff_row, eia_zipcode_database, state_abbr=STATE_
     return metadata
 
 
-def add_index(zipcodes, metadata_list, openei_tariff_row):
+def create_tariff(openei_tariff_row):
     """
-    Add entire tariff sheet at index i to the tariff list and metadata list
+    Create entire tariff sheet
 
     Parameters
     ----------
     zipcodes : pandas.DataFrame
         The dataframe of zipcodes mapping to EIA IDs.
-    metadata_list : list
-        The list of metadata dictionaries for the metadata file.
-    openei : pandas.DataFrame
-        The original data from OpenEI's utility rate database.
 
     Returns
     -------
@@ -731,7 +706,7 @@ def main(savefolder="data/converted/", suffix="", verbose=False):
         openei_tariff_row = openei_df.iloc[i]
 
         # process the tariff
-        tariff = add_index([], [], openei_tariff_row)
+        tariff = create_tariff(openei_tariff_row)
         tariff_df = pd.DataFrame(tariff)
         label = tariff_df["label"][0]
         tariff_df.to_csv(savefolder + f"{label}.csv", index=False)

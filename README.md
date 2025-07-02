@@ -77,8 +77,6 @@ The metadata spreadsheets contain information on each of the tariffs in their re
 - **state**: the state for this tariff service area 
 - **latitude**: estimated latitude for geospatial visualization. Converted from `zipcode` using [pgeocode](https://pgeocode.readthedocs.io/en/latest/)
 - **longitude**: estimated longitude for geospatial visualization. Converted from `zipcode` using [pgeocode](https://pgeocode.readthedocs.io/en/latest/)
-- **iso**: independent system operator (ISO) for this tariff. Estimated from the `latitude` and `longitude` using [geopandas](https://geopandas.org/en/stable/) and shape files from the [US Energy Atlas](https://atlas.eia.gov/). When there are multiple overlapping ISOs this may be a list
-- **num_iso**: number of ISOs found if there were multiple overlapping in the shape file
 - **notes**: notes about this tariff from USURDB
 
 ### Reject List Format
