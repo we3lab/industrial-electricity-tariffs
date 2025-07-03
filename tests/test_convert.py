@@ -1902,10 +1902,12 @@ def test_get_lat_long(zipcode, expected):
 @pytest.mark.parametrize("suffix", [("_bundled"), ("_delivery_only")])
 def test_main(suffix):
     # ensure that previous steps have been run so that `main` can be tested
-    command = ["python", "code/download.py"]
-    subprocess.run(command, check=True)
-    command = ["python", "code/filter.py"]
-    subprocess.run(command, check=True)
+    if not os.path.exists("data/raw/usurdb_raw.csv"):
+        command = ["python", "code/download.py"]
+        subprocess.run(command, check=True)
+    if not os.path.exists("data/filtered/bundled"):
+        command = ["python", "code/filter.py"]
+        subprocess.run(command, check=True)
 
     # run main for just one suffix
     main(suffix=suffix)

@@ -83,6 +83,7 @@ The metadata spreadsheets contain information on each of the tariffs in their re
 The reject list provides a list of tariffs that were filtered and converted, but rejected as invalid by [validate.py](https://github.com/we3lab/industrial-electricity-tariffs/blob/main/code/validate.py). As such, it is a simple one-column spreadsheet:
 
 - **tariff_id**: the ID of the rejected tariff. Usually this is the USURDB label, but if from [Chapin et al. (2024)](https://doi.org/10.1038/s41597-023-02886-6) then this is CWNS Number.
+- **reason**: the reason why the tariff was rejected as invalid 
 
 ## Tests
 

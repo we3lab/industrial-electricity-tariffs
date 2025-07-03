@@ -10,8 +10,9 @@ data_folder_path = os.path.join("data", "filtered")
 skip_all_tests = False
 
 # ensure that data/raw/usurdb_raw.csv exists
-command = ["python", "code/download.py"]
-subprocess.run(command, check=True)
+if not os.path.exists("data/raw/usurdb_raw.csv"):
+    command = ["python", "code/download.py"]
+    subprocess.run(command, check=True)
 
 
 @pytest.mark.skipif(skip_all_tests, reason="Exclude all tests")

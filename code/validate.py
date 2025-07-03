@@ -198,16 +198,18 @@ def validate_tariff(tariff_df, tariff_id, max_charges=MAX_CHARGES):
         except AssertionError:
             raise ValueError("Unit conversion error between imperial and metric")
     except Exception as e:
-        print(f"Error with {tariff_id}:", e)
-        return False
+        error_str = f"Error with {tariff_id}: {e}"
+        print(ferror_str)
+        return False, error_str
 
-    return True
+    return True, "Success!"
 
 
 def validate_tariffs(
     savefolder="data/validated/bundled/", datafolder="data/merged/bundled/", suffix=""
 ):
     reject_tariffs = []
+    reject_messages = []
     metadatapath = (
         os.path.dirname(os.path.dirname(datafolder)) + "/metadata" + suffix + ".csv"
     )
@@ -224,8 +226,9 @@ def validate_tariffs(
     for tariff_id in metadata_df.index:
         sourcepath = datafolder + tariff_id + ".csv"
         tariff_df = pd.read_csv(sourcepath)
+        validation_result = validate_tariff(tariff_df, tariff_id)
         # copy valid_tariffs to data/validated folder with suffix
-        if validate_tariff(tariff_df, tariff_id):
+        if validation_result[0]:
             outpath = os.path.join(savefolder, tariff_id + ".csv")
             shutil.copyfile(sourcepath, outpath)
         else:
@@ -233,13 +236,14 @@ def validate_tariffs(
             metadata_df = metadata_df.drop(tariff_id)
             # add to reject list
             reject_tariffs.append(tariff_id)
+            reject_messages.append(validation_result[1])
 
     print(
         f"Number of tariffs after validation: {len(metadata_df) - len(reject_tariffs)}"
     )
 
     # save reject_tariffs list in data/validated folder with suffix
-    pd.DataFrame({"tariff_id": reject_tariffs}).to_csv(
+    pd.DataFrame({"tariff_id": reject_tariffs, "reason": reject_messages}).to_csv(
         "data/validated/rejected" + suffix + ".csv", index=False
     )
 
