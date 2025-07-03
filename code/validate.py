@@ -199,7 +199,7 @@ def validate_tariff(tariff_df, tariff_id, max_charges=MAX_CHARGES):
             raise ValueError("Unit conversion error between imperial and metric")
     except Exception as e:
         error_str = f"Error with {tariff_id}: {e}"
-        print(ferror_str)
+        print(error_str)
         return False, error_str
 
     return True, "Success!"
