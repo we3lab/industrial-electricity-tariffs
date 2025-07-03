@@ -67,7 +67,7 @@ STATE_ABBR = {
     "Pennsylvania": "PA",
     "Rhode Island": "RI",
     "South Carolina": "SC",
-    "South Dakota": "SD",   
+    "South Dakota": "SD",
     "Tennessee": "TN",
     "Texas": "TX",
     "Utah": "UT",
@@ -80,9 +80,10 @@ STATE_ABBR = {
     "District of Columbia": "MD",
 }
 
+
 def make_dict():
     """
-    creates a dictionary for the tariff file
+    Creates a dictionary for the tariff file
 
     Parameters
     ----------
@@ -162,7 +163,7 @@ def process_demand_unit(charge, unit, charge_dict):
 
     Returns
     -------
-    dictionary
+    dict
         The dictionary for the tariff file with the processed demand unit.
     """
     if isinstance(unit, float) and math.isnan(unit):
@@ -190,7 +191,6 @@ def process_demand_unit(charge, unit, charge_dict):
         charge_dict["units"] = "$/kW"
         charge_dict["charge (imperial)"] = charge * HP_TO_KW_CONVERSION
         charge_dict["charge (metric)"] = charge * HP_TO_KW_CONVERSION
-
     return charge_dict
 
 
@@ -230,7 +230,9 @@ def process_customer(openei_tariff_row):
     data_dict["charge (metric)"] = customer_charge
     data_dict["units"] = "$/month"
     data_dict["Notes"] = str(openei_tariff_row["source"]) + (
-        "\t" + str(openei_tariff_row["sourceparent"]) if openei_tariff_row["sourceparent"] != "" else ""
+        "\t" + str(openei_tariff_row["sourceparent"])
+        if not (openei_tariff_row["sourceparent"] == "" or pd.isna(openei_tariff_row["sourceparent"]))
+        else ""
     )
     return [data_dict]
 
@@ -316,10 +318,14 @@ def process_flat_demand(openei_tariff_row):
         data_dict["weekday_end"] = "6"
         if not np.isnan(openei_tariff_row[tier_str + "adj"]):
             charge += openei_tariff_row[tier_str + "adj"]
-            data_dict["Notes"] += f'adjustment factor of {openei_tariff_row[tier_str + "adj"]}'
+            data_dict[
+                "Notes"
+            ] += f'adjustment factor of {openei_tariff_row[tier_str + "adj"]}'
         else:
             data_dict["Notes"] += ""
-        data_dict = process_demand_unit(charge, openei_tariff_row["flatdemandunit"], data_dict)
+        data_dict = process_demand_unit(
+            charge, openei_tariff_row["flatdemandunit"], data_dict
+        )
 
         dict_list.append(data_dict)
 
@@ -392,8 +398,11 @@ def unpack_array(
         try:
             # tier_str first to catch ValueErrors from null values in the dataframe
             tier_str = (
-                string + "/period" + str(hour_list[hour]) 
-                + "/tier" + str(tier_index_dict[hour_list[hour]])
+                string
+                + "/period"
+                + str(hour_list[hour])
+                + "/tier"
+                + str(tier_index_dict[hour_list[hour]])
             )
             rate = openei_tariff_row[tier_str + "rate"]
         except (IndexError, ValueError, KeyError):
@@ -421,8 +430,8 @@ def unpack_array(
 
         data_dict["units"] = units
         data_dict["Notes"] = ""
-        
-        # append to list of dictionaries - each dict is a charge 
+
+        # append to list of dictionaries - each dict is a charge
         dict_list.append(data_dict)
 
         max_str = (
@@ -547,7 +556,7 @@ def process_energy(openei_tariff_row):
         "energy",
         0,
         4,
-        openei_tariff_row
+        openei_tariff_row,
     )
     dict_list_weekend = unpack_array(
         weekend_ranges,
@@ -557,33 +566,13 @@ def process_energy(openei_tariff_row):
         "energy",
         5,
         6,
-        openei_tariff_row
+        openei_tariff_row,
     )
 
     dict_list_weekday.extend(dict_list_weekend)
 
     return dict_list_weekday
 
-
-def sector_filter(acceptable_sectors, openei_tariff_row):
-    """
-    Filter the openei dataframe based on the desired sector
-
-    Parameters
-    ----------
-    acceptable_sectors : str list
-        The list of sectors to filter by.
-    openei : pandas.DataFrame
-        The original data from OpenEI's utility rate database.
-
-    Returns
-    -------
-    bool
-        True if the sector fits within the list of acceptable sectors.
-    """
-    if openei_tariff_row["sector"] in acceptable_sectors:
-        return True
-    return False
 
 def generate_metadata(openei_tariff_row, eia_zipcode_database, state_abbr=STATE_ABBR):
     """Generates a metadata dictionary for the tariff sheet/openei index.
@@ -602,45 +591,48 @@ def generate_metadata(openei_tariff_row, eia_zipcode_database, state_abbr=STATE_
         eiaid, name, label, utility, source, zipcode, state, city, county, notes
     """
     metadata = {}
-    metadata['eiaid'] = str(int(openei_tariff_row["eiaid"]))
+    metadata["eiaid"] = str(int(openei_tariff_row["eiaid"]))
 
     for key in ["label", "name", "utility", "source"]:
         metadata[key] = openei_tariff_row[key]
 
     try:
-        #subset the list of zipcodes that match the eiaid
-        valid_zips = eia_zipcode_database[eia_zipcode_database["eiaid"] == openei_tariff_row["eiaid"]]
+        # subset the list of zipcodes that match the eiaid
+        valid_zips = eia_zipcode_database[
+            eia_zipcode_database["eiaid"] == openei_tariff_row["eiaid"]
+        ]
         # just take the first one - TODO: do something better/more sophisticated with more info
         zip_val = int(valid_zips["zip"].iloc[0])
         # check if the zip code is 5 digits otherwise add a leading 0
         if len(str(zip_val)) < 5:
             zip_val = "0" + str(zip_val)
         metadata["zipcode"] = zip_val
-        metadata["state"] = valid_zips["state"].iloc[0] # likely all the states are the same 
+        metadata["state"] = valid_zips["state"].iloc[
+            0
+        ]  # likely all the states are the same
     except:
         metadata["zipcode"] = np.nan
         metadata["state"] = np.nan
         for key, val in state_abbr.items():
-            if key in str(openei_tariff_row["utility"]) or key in str(openei_tariff_row["source"]):
+            if key in str(openei_tariff_row["utility"]) or key in str(
+                openei_tariff_row["source"]
+            ):
                 metadata["state"] = val
                 break
-        
+
     metadata["notes"] = openei_tariff_row["description"]
 
     return metadata
-    
-def add_index(zipcodes, metadata_list, openei_tariff_row):
+
+
+def create_tariff(openei_tariff_row):
     """
-    Add entire tariff sheet at index i to the tariff list and metadata list
+    Create entire tariff sheet
 
     Parameters
     ----------
     zipcodes : pandas.DataFrame
         The dataframe of zipcodes mapping to EIA IDs.
-    metadata_list : list
-        The list of metadata dictionaries for the metadata file.
-    openei : pandas.DataFrame
-        The original data from OpenEI's utility rate database.
 
     Returns
     -------
@@ -658,20 +650,20 @@ def add_index(zipcodes, metadata_list, openei_tariff_row):
 
 def get_lat_long(zipcode):
     """Get the latitude and longitude of the postal code and add it as a column
-    
+
     Parameters
     ----------
     zipcode : str
         ZIP code as a string
 
-    nomi : 
+    nomi :
 
     Returns
     -------
     float, float
         Latitude and longitude as a tuple
     """
-    nomi = pg.Nominatim('us')
+    nomi = pg.Nominatim("us")
 
     # check if zipcode is a 5 digit number
     if pd.isna(zipcode):
@@ -680,8 +672,8 @@ def get_lat_long(zipcode):
         zipcode = str(int(zipcode))
         if len(zipcode) != 5:
             # add a zero to the end of the zipcode
-            zipcode = '0' + zipcode
-    
+            zipcode = "0" + zipcode
+
     obj = nomi.query_postal_code(zipcode)
     if obj.latitude is None or np.isnan(obj.latitude):
         print(f"Error with zipcode {zipcode}")
@@ -698,23 +690,23 @@ def main(savefolder="data/converted/", suffix="", verbose=False):
     zipcodes_path = "data/filtered/merged_zipcodes.csv"
     zipcodes = pd.read_csv(zipcodes_path, low_memory=False)
 
-    openei_path ="data/filtered/usurdb" + suffix + ".csv"
+    openei_path = "data/filtered/usurdb" + suffix + ".csv"
     openei_df = pd.read_csv(openei_path, low_memory=False)
     openei_df["sourceparent"] = openei_df["sourceparent"].fillna("")
 
     if not os.path.exists(savefolder):
         os.mkdir(savefolder)
-    
+
     metadata_list = []
 
-    # for each row of openei_df 
+    # for each row of openei_df
     # (1) build the tariff sheet
     # (2) find the metadata and produce a metadata row
     for i in range(len(openei_df)):
         openei_tariff_row = openei_df.iloc[i]
 
         # process the tariff
-        tariff = add_index([], [], openei_tariff_row)
+        tariff = create_tariff(openei_tariff_row)
         tariff_df = pd.DataFrame(tariff)
         label = tariff_df["label"][0]
         tariff_df.to_csv(savefolder + f"{label}.csv", index=False)
@@ -729,32 +721,35 @@ def main(savefolder="data/converted/", suffix="", verbose=False):
             for key in STATE_ABBR.keys():
                 if key in metadata_row["utility"]:
                     metadata_row["state"] = STATE_ABBR[key]
-                    print(f"Found 'state'={STATE_ABBR[key]} in 'utility'={metadata_row['utility']}")
+                    print(
+                        f"Found 'state'={STATE_ABBR[key]} in 'utility'={metadata_row['utility']}"
+                    )
                     break
         metadata_list.append(metadata_row)
 
         if verbose:
             print(f"Saved {label} to {savefolder}")
-    
+
     # save the metadata
     metadata_df = pd.DataFrame(metadata_list)
 
     # order the columns
     metadata_df = metadata_df[
         [
-            "label", 
-            "eiaid", 
-            "name", 
-            "utility", 
-            "source", 
-            "zipcode", 
-            "state", 
-            "latitude", 
-            "longitude", 
+            "label",
+            "eiaid",
+            "name",
+            "utility",
+            "source",
+            "zipcode",
+            "state",
+            "latitude",
+            "longitude",
             "notes",
         ]
     ]
-    metadata_df.to_csv("data/converted/metadata"+ suffix + ".csv", index=False)
+    metadata_df.to_csv("data/converted/metadata" + suffix + ".csv", index=False)
+
 
 if __name__ == "__main__":
     main(savefolder="data/converted/bundled/", suffix="_bundled")
