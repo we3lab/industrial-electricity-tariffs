@@ -2,7 +2,7 @@ import os
 import glob
 import pytest
 import subprocess
-from code.merge import *
+from scripts.merge import *
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 data_folder_path = os.path.join("data", "merged")
@@ -12,13 +12,13 @@ skip_all_tests = False
 def test_main():
     # run the pre-scripts if data does not exist
     if not os.path.exists(os.path.join("data", "raw", "usurdb_raw.csv")):
-        command = ["python", "code/download.py"]
+        command = ["python", "scripts/download.py"]
         subprocess.run(command, check=True)
     if not os.path.exists(os.path.join("data", "filtered", "usurdb_bundled.csv")):
-        command = ["python", "code/filter.py"]
+        command = ["python", "scripts/filter.py"]
         subprocess.run(command, check=True)
     if not os.path.exists(os.path.join("data", "converted", "bundled")):
-        command = ["python", "code/convert.py"]
+        command = ["python", "scripts/convert.py"]
         subprocess.run(command, check=True)
 
     # check that the script runs without error

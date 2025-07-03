@@ -2,7 +2,7 @@ import os
 import math
 import pytest
 import subprocess
-from code.convert import *
+from scripts.convert import *
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 data_folder_path = os.path.join("tests", "data")
@@ -1903,10 +1903,10 @@ def test_get_lat_long(zipcode, expected):
 def test_main(suffix):
     # ensure that previous steps have been run so that `main` can be tested
     if not os.path.exists("data/raw/usurdb_raw.csv"):
-        command = ["python", "code/download.py"]
+        command = ["python", "scripts/download.py"]
         subprocess.run(command, check=True)
     if not os.path.exists("data/filtered/bundled"):
-        command = ["python", "code/filter.py"]
+        command = ["python", "scripts/filter.py"]
         subprocess.run(command, check=True)
 
     # run main for just one suffix

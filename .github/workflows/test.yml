@@ -19,5 +19,5 @@ jobs:
     - name: Test with pytest
       shell: bash -el {0}
       run: |
-        python -m pytest --cov-report xml --cov=code tests/ -vv
+        python -m pytest --cov-report xml --cov=scripts tests/ -vv
         codecov -t ${{ secrets.CODECOV_TOKEN }}

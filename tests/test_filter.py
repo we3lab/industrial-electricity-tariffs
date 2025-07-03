@@ -3,7 +3,7 @@ import pytest
 import datetime
 import subprocess
 import pandas as pd
-from code.filter import *
+from scripts.filter import *
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 data_folder_path = os.path.join("data", "filtered")
@@ -11,7 +11,7 @@ skip_all_tests = False
 
 # ensure that data/raw/usurdb_raw.csv exists
 if not os.path.exists("data/raw/usurdb_raw.csv"):
-    command = ["python", "code/download.py"]
+    command = ["python", "scripts/download.py"]
     subprocess.run(command, check=True)
 
 

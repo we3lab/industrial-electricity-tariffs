@@ -10,7 +10,7 @@ skip_all_tests = False
 @pytest.mark.skipif(skip_all_tests, reason="Exclude all tests")
 def test_download():
     # check that the script runs without error
-    command = ["python", "code/download.py"]
+    command = ["python", "scripts/download.py"]
     subprocess.run(command, check=True)
 
     # check the following files are downloaded without error:

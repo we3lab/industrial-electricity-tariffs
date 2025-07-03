@@ -17,15 +17,15 @@ jobs:
     - name: Install Dependencies
       run: pip install -r requirements.txt
     - name: Download Raw Data
-      run: python code/download.py
+      run: python scripts/download.py
     - name: Filter by Sector, Service Type
-      run: python code/filter.py
+      run: python scripts/filter.py
     - name: Convert to Our Format
-      run: python code/convert.py
+      run: python scripts/convert.py
     - name: Merge data from wwtp-energy-tariffs
-      run: python code/merge.py
+      run: python scripts/merge.py
     - name: Validate Output
-      run: python code/validate.py
+      run: python scripts/validate.py
     - name: Zip Files
       uses: papeloto/action-zip@v1
       with:

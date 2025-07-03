@@ -10,22 +10,22 @@ skip_all_tests = False
 
 @pytest.mark.skipif(skip_all_tests, reason="Exclude all tests")
 def test_main():
-        # run the pre-scripts if data does not exist
+    # run the pre-scripts if data does not exist
     if not os.path.exists(os.path.join("data", "raw", "usurdb_raw.csv")):
-        command = ["python", "code/download.py"]
+        command = ["python", "scripts/download.py"]
         subprocess.run(command, check=True)
     if not os.path.exists(os.path.join("data", "filtered", "usurdb_bundled.csv")):
-        command = ["python", "code/filter.py"]
+        command = ["python", "scripts/filter.py"]
         subprocess.run(command, check=True)
     if not os.path.exists(os.path.join("data", "converted", "bundled")):
-        command = ["python", "code/convert.py"]
+        command = ["python", "scripts/convert.py"]
         subprocess.run(command, check=True)
     if not os.path.exists(os.path.join("data", "merged", "bundled")):
-        command = ["python", "code/merge.py"]
+        command = ["python", "scripts/merge.py"]
         subprocess.run(command, check=True)
 
     # check that the script runs without error
-    command = ["python", "code/validate.py"]
+    command = ["python", "scripts/validate.py"]
     subprocess.run(command, check=True)
 
     ## bundled
