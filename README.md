@@ -94,13 +94,14 @@ To execute the tests, run the following command from the top level of the reposi
 
 ## Attribution & Acknowledgements
 
-We are working for a publication accompanying this data set, and will add the citation to attribute at that time. 
+Casey S. Chen created the data conversion code under the guidance of Akshay K. Rao, Adhithyan Sakthivelu, Fletcher T. Chapin, and Meagan S. Mauter.
 
+We are working for a publication accompanying this data set, and will add the citation to attribute once that is published. 
 In the meantime, we recommend you cite the data descriptor from Nature Scientific Data where the data format was originally published:
 
 &nbsp; Chapin, F.T., Bolorinos, J. & Mauter, M.S. Electricity and natural gas tariffs at United States wastewater treatment plants. *Sci Data* **11**, 113 (2024). DOI: [10.1038/s41597-023-02886-6](https://doi.org/10.1038/s41597-023-02886-6)
 
-In `bibtex` format:
+In `BibTeX` format:
 
 ```
 @Article{Chapin2024,
@@ -126,5 +127,7 @@ This work was supported by the following grants and programs:
 
 - Stanford Woods Institute [Mentoring Undergraduate in Interdisciplinary Research (MUIR)](https://woods.stanford.edu/educating-leaders/education-leadership-programs/mentoring-undergraduates-interdisciplinary-research) program
 - [Department of Energy, the Office of Energy Efficiency and Renewable Energy, Advanced Manufacturing Office](https://www.energy.gov/eere/ammto/advanced-materials-and-manufacturing-technologies-office) (grant number DE-EE0009499)
+- [National Alliance for Water Innovation (NAWI)](https://www.nawihub.org/) (grant number UBJQH - MSM)
+
 
 The views and opinions of authors expressed herein do not necessarily state or reflect those of the United States Government or any agency thereof. Neither the United States Government nor any agency thereof, nor any of their employees, makes any warranty, express or implied, or assumes any legal liability or responsibility for the accuracy, completeness, or usefulness of any information, apparatus, product, or process disclosed, or represents that its use would not infringe privately owned rights.

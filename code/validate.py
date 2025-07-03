@@ -212,6 +212,7 @@ def validate_tariffs(
         os.path.dirname(os.path.dirname(datafolder)) + "/metadata" + suffix + ".csv"
     )
     metadata_df = pd.read_csv(metadatapath)
+    metadata_df.set_index("label", inplace=True)
 
     if not os.path.exists(savefolder):
         os.mkdir(savefolder)
@@ -220,14 +221,17 @@ def validate_tariffs(
         f"Number of tariffs after conversion, but before validation: {len(metadata_df)}"
     )
 
-    for tariff_id in metadata_df["label"]:
+    for tariff_id in metadata_df.index:
         sourcepath = datafolder + tariff_id + ".csv"
         tariff_df = pd.read_csv(sourcepath)
         # copy valid_tariffs to data/validated folder with suffix
         if validate_tariff(tariff_df, tariff_id):
-            outpath = savefolder + tariff_id + ".csv"
+            outpath = os.path.join(savefolder, tariff_id + ".csv")
             shutil.copyfile(sourcepath, outpath)
         else:
+            # remove from metadata_df
+            metadata_df = metadata_df.drop(tariff_id)
+            # add to reject list
             reject_tariffs.append(tariff_id)
 
     print(
@@ -239,14 +243,13 @@ def validate_tariffs(
         "data/validated/rejected" + suffix + ".csv", index=False
     )
 
-    # copy metadata to data/validated folder
-    shutil.copyfile(
-        metadatapath,
-        os.path.dirname(os.path.dirname(savefolder)) + "/metadata" + suffix + ".csv",
+    # save metadata to data/validated folder
+    metadata_df.to_csv(
+        "data/validated/metadata" + suffix + ".csv", index=True
     )
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     validate_tariffs(
         savefolder="data/validated/bundled/",
         datafolder="data/merged/bundled/",
