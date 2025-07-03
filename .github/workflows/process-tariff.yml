@@ -1,9 +1,8 @@
 name: Process Tariffs
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
+  schedule:
+    - cron: "0 0 1 * *" # run on the first day of each month
 
 jobs:
   process-and-publish:
@@ -31,14 +30,17 @@ jobs:
       with:
         files: data/validated/
         dest: data/industrial-electricity-tariffs.zip
+    - name: set VERSION
+    run: |
+      echo "::set-env name=VERSION::$(date -I | sed 's/-/./g')"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ env.VERSION }}
+        release_name: Release ${{ env.VERSION }}
         draft: false
         prerelease: false
     - name: Upload Release Asset

@@ -1,3 +1,4 @@
+codecov
 openpyxl
 pandas
 pgeocode
