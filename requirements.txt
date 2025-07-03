@@ -1,3 +1,5 @@
+openpyxl
 pandas
 pgeocode
-openpyxl
+pytest
+pytest-cov

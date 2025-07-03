@@ -1,5 +1,7 @@
 # Industrial Electricity Tariffs
 
+[![codecov](https://codecov.io/gh/we3lab/industrial-electricity-tariffs/graph/badge.svg?token=M1WHXPGH2F)](https://codecov.io/gh/we3lab/industrial-electricity-tariffs)
+
 The most recent version of the dataset can be found in `industrial-electricity-tariffs.zip` at [Releases](https://github.com/we3lab/industrial-electricity-tariffs/releases).
 
 We use a data format specified by Chapin et al. in [Electricity and natural gas tariffs at United States wastewater treatment plants](https://doi.org/10.1038/s41597-023-02886-6) that can represent all the complexities of electricity tariffs across the United States (tiered charges, multiple peak periods, daily demand charges, etc.).
