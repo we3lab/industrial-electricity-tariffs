@@ -1,6 +1,8 @@
-# Industrial Electricity Tariffs
+# Industrial and Commercial Electricity Tariffs in the United States
 
 [![codecov](https://codecov.io/gh/we3lab/industrial-electricity-tariffs/graph/badge.svg?token=M1WHXPGH2F)](https://codecov.io/gh/we3lab/industrial-electricity-tariffs)
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16739989.svg)](https://doi.org/10.5281/zenodo.16739989)
 
 The most recent version of the dataset can be found in `industrial-electricity-tariffs.zip` at [Releases](https://github.com/we3lab/industrial-electricity-tariffs/releases).
 
@@ -100,29 +102,50 @@ python -m pytest tests
 Casey S. Chen created the data conversion code under the guidance of Akshay K. Rao, Adhithyan Sakthivelu, Fletcher T. Chapin, and Meagan S. Mauter.
 
 We are working for a publication accompanying this data set, and will add the citation to attribute once that is published. 
-In the meantime, we recommend you cite the data descriptor from Nature Scientific Data where the data format was originally published:
+
+
+In the meantime, you can cite the dataset directly as described in [CITATION.cff](https://github.com/we3lab/valuing-flexibility-from-water/blob/main/CITATION.cff) or in `BibTeX` format:
+
+```
+@misc{chapin2025industrial,
+  author={Chapin, Fletcher T.
+  and Rao, Akshay K.
+  and Sakthivelu, Adhithyan
+  and Chen, Casey S.
+  and Mauter, Meagan S.},
+  title={Industrial and Commercial Electricity Tariffs in the United States},
+  year={2025},
+  month={Aug},
+  day={1},
+  version={2025.08.01},
+  doi={10.5281/zenodo.16739989},
+  url={https://github.com/we3lab/industrial-electricity-tariffs}
+}
+```
+
+We also recommend that you cite the data descriptor from Nature Scientific Data where the data format was originally published:
 
 &nbsp; Chapin, F.T., Bolorinos, J. & Mauter, M.S. Electricity and natural gas tariffs at United States wastewater treatment plants. *Sci Data* **11**, 113 (2024). DOI: [10.1038/s41597-023-02886-6](https://doi.org/10.1038/s41597-023-02886-6)
 
 In `BibTeX` format:
 
 ```
-@Article{Chapin2024,
-author={Chapin, Fletcher T.
-and Bolorinos, Jose
-and Mauter, Meagan S.},
-title={Electricity and natural gas tariffs at United States wastewater treatment plants},
-journal={Scientific Data},
-year={2024},
-month={Jan},
-day={23},
-volume={11},
-number={1},
-pages={113},
-abstract={Wastewater treatment plants (WWTPs) are large electricity and natural gas consumers with untapped potential to recover carbon-neutral biogas and provide energy services for the grid. Techno-economic analysis of emerging energy recovery and management technologies is critical to understanding their commercial viability, but quantifying their energy cost savings potential is stymied by a lack of well curated, nationally representative electricity and natural gas tariff data. We present a dataset of electricity tariffs for the 100 largest WWTPs in the Clean Watershed Needs Survey (CWNS) and natural gas tariffs for the 54 of 100 WWTPs with on-site cogeneration. We manually collected tariffs from each utility's website and implemented data checks to ensure their validity. The dataset includes facility metadata, electricity tariffs, and natural gas tariffs (where cogeneration is present). Tariffs are current as of November 2021. We provide code for technical validation along with a sample simulation.},
-issn={2052-4463},
-doi={10.1038/s41597-023-02886-6},
-url={https://doi.org/10.1038/s41597-023-02886-6}
+@Article{chapin2024electricity,
+  author={Chapin, Fletcher T.
+  and Bolorinos, Jose
+  and Mauter, Meagan S.},
+  title={Electricity and natural gas tariffs at United States wastewater treatment plants},
+  journal={Scientific Data},
+  year={2024},
+  month={Jan},
+  day={23},
+  volume={11},
+  number={1},
+  pages={113},
+  abstract={Wastewater treatment plants (WWTPs) are large electricity and natural gas consumers with untapped potential to recover carbon-neutral biogas and provide energy services for the grid. Techno-economic analysis of emerging energy recovery and management technologies is critical to understanding their commercial viability, but quantifying their energy cost savings potential is stymied by a lack of well curated, nationally representative electricity and natural gas tariff data. We present a dataset of electricity tariffs for the 100 largest WWTPs in the Clean Watershed Needs Survey (CWNS) and natural gas tariffs for the 54 of 100 WWTPs with on-site cogeneration. We manually collected tariffs from each utility's website and implemented data checks to ensure their validity. The dataset includes facility metadata, electricity tariffs, and natural gas tariffs (where cogeneration is present). Tariffs are current as of November 2021. We provide code for technical validation along with a sample simulation.},
+  issn={2052-4463},
+  doi={10.1038/s41597-023-02886-6},
+  url={https://doi.org/10.1038/s41597-023-02886-6}
 }
 ```
 
