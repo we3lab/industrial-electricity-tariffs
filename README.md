@@ -99,10 +99,9 @@ python -m pytest tests
 
 ## Attribution & Acknowledgements
 
-Casey S. Chen created the data conversion code under the guidance of Akshay K. Rao, Adhithyan Sakthivelu, Fletcher T. Chapin, and Meagan S. Mauter.
+Fletcher T. Chapin refined the data conversion code originally created by Casey S. Chen under the guidance of Akshay K. Rao, Adhithyan Sakthivelu, and Meagan S. Mauter.
 
 We are working for a publication accompanying this data set, and will add the citation to attribute once that is published. 
-
 
 In the meantime, you can cite the dataset directly as described in [CITATION.cff](https://github.com/we3lab/valuing-flexibility-from-water/blob/main/CITATION.cff) or in `BibTeX` format:
 
