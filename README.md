@@ -1,4 +1,4 @@
-# Industrial and Commercial Electricity Tariffs in the United States
+# Industrial and Commercial Electricity Tariffs in the US
 
 [![codecov](https://codecov.io/gh/we3lab/industrial-electricity-tariffs/graph/badge.svg?token=M1WHXPGH2F)](https://codecov.io/gh/we3lab/industrial-electricity-tariffs)
 
