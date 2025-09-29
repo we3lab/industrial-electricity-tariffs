@@ -23,7 +23,7 @@ jobs:
       run: |
         echo "Fetching release assets..."
         RELEASE_ASSETS=$( curl -s "https://api.github.com/repos/we3lab/industrial-electricity-tariffs/releases/latest" \
-          | jq -r '.assets_url'
+          | jq -r '.assets.browser_download_url'
         )
         echo "RELEASE_ASSETS=$RELEASE_ASSETS" >> $GITHUB_ENV
     - name: Download release assets
@@ -50,12 +50,14 @@ jobs:
         )
         DEPOSITION_ID=$( $RESPONSE | jq -r ".id" )
 
+        echo "Deposition ID is $DEPOSITION_ID"
+
         # Loop through downloaded assets and upload them
         for file in assets/*; do
           echo "Uploading $file to Zenodo..."
-          curl -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
-               -F "file=@$file" \
-               "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files"
+          curl -X POST "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files" \
+            -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+            -F "file=@$file" \
         done
 
       # TODO: Publish the Record (https://developers.zenodo.org/#deposition-actions)
