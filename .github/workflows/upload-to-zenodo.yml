@@ -1,8 +1,7 @@
 # modified from https://github.com/zenodo/zenodo/issues/1235
-name: Upload GitHub Release Assets to Zenodo
+name: Upload GH Release Assets to Zenodo
 
 on:
-  pull_request:
   workflow_dispatch:
   release:
     types: [published]
@@ -22,10 +21,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "Fetching release assets..."
-        RELEASE_ASSETS=$(curl -s \
+        RELEASE_ASSETS=$( curl -s \ 
           -H "Authorization: Bearer $GITHUB_TOKEN" \
-          "https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets" \
-          | jq -r '.[] | .browser_download_url')
+          "https://api.github.com/repos/we3lab/industrial-electricity-tariffs/releases/latest" \
+          | jq -r '.assets_url'
+        )
         echo "RELEASE_ASSETS=$RELEASE_ASSETS" >> $GITHUB_ENV
     - name: Download release assets
       run: |
