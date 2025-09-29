@@ -23,7 +23,6 @@ jobs:
       run: |
         echo "Fetching release assets..."
         RELEASE_ASSETS=$( curl -s \ 
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
           "https://api.github.com/repos/we3lab/industrial-electricity-tariffs/releases/latest" \
           | jq -r '.assets_url'
         )
