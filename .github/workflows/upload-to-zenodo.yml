@@ -22,15 +22,13 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "Fetching release assets..."
-        RELEASE_ASSETS=$( curl -s "https://api.github.com/repos/we3lab/industrial-electricity-tariffs/releases/latest" \
-          | jq -r '.assets'
-        )
+        json_response=$( curl -s "https://api.github.com/repos/we3lab/industrial-electricity-tariffs/releases/latest")
+        RELEASE_ASSETS=($(echo $json_response | jq -c ".assets[].browser_download_url"))
         echo "RELEASE_ASSETS=$RELEASE_ASSETS" >> $GITHUB_ENV
     - name: Download release assets
       run: |
         mkdir assets
-        for object in $RELEASE_ASSETS; do
-          url=$( object | jq -r '.browser_download_url')
+        for url in $RELEASE_ASSETS; do
           echo "Downloading $url..."
           curl -L -o "assets/$(basename $url)" "$url"
         done
@@ -40,7 +38,7 @@ jobs:
         VERSION: ${{ env.VERSION }}
       run: |
         # Get the old deposition ID
-        OLD_ID=$( curl -X GET "https://zenodo.org/api/records?q=conceptdoi:10.5281/zenodo.16739989" | jq -r ".hits.hits"[0]".id" )
+        OLD_ID=$( curl -X GET "https://zenodo.org/api/records?q=conceptdoi:10.5281/zenodo.16739989" | jq -r ".hits.hits.[0].id" )
 
         # Create a new version using that ID
         RESPONSE=$( curl -X POST \
