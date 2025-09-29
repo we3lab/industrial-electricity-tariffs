@@ -1,0 +1,95 @@
+# modified from https://github.com/zenodo/zenodo/issues/1235
+name: Upload GitHub Release Assets to Zenodo
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  upload-assets-to-zenodo:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'Setup jq'
+      uses: dcarbone/install-jq-action@v3
+    - name: set VERSION
+      run: echo "VERSION=$(date -I | sed 's/-/./g')" >> $GITHUB_ENV
+    - name: Get release assets
+      id: get-assets
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "Fetching release assets..."
+        RELEASE_ASSETS=$(curl -s \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets" \
+          | jq -r '.[] | .browser_download_url')
+        echo "RELEASE_ASSETS=$RELEASE_ASSETS" >> $GITHUB_ENV
+    - name: Download release assets
+      run: |
+        mkdir assets
+        for url in $RELEASE_ASSETS; do
+          echo "Downloading $url..."
+          curl -L -o "assets/$(basename $url)" "$url"
+        done
+    - name: Upload to Zenodo
+      env:
+        ZENODO_ACCESS_TOKEN: ${{ secrets.ZENODO_ACCESS_TOKEN }}
+        VERSION: ${{ env.VERSION }}
+      run: |
+        # Get the old deposition ID
+        OLD_ID=$( curl -X GET "https://zenodo.org/api/records?q=conceptdoi:10.5281/zenodo.16739989" | jq -r ".hits.hits"[0]".id" )
+
+        # Create a new version using that ID
+        RESPONSE=$( curl -X POST \
+          "https://zenodo.org/api/deposit/depositions/$OLD_ID/actions/newversion" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+          -d "{}"
+        )
+        DEPOSITION_ID = $RESPONSE | jq -r ".id"
+
+        # Create empty record to get deposition ID
+        DEPOSITION_ID=$( curl -X POST \
+          https://zenodo.org/api/deposit/depositions \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+          -d '{"metadata": {' \
+            '"version": "$VERSION",' \
+            '"title": "Industrial and Commercial Electricity Tariffs in the United States",' \
+            "creators": \[{"name": "Chapin, Fletcher T.", "orcid": "0000-0002-2165-7963"},{"name": "Rao, Akshay K.", "orcid": "0000-0002-9054-476X"},{"name": "Sakthivelu, Adhithyan", "orcid": "0000-0002-3826-8112"},{"name": "Chen, Casey S."},{"name": "Mauter, Meagan S.", "orcid": "0000-0002-4932-890X"}\], "related_identifiers": \[{"relation": "isNewVersionOf", "identifier": "10.5281/zenodo.16739989"}\],
+            '"upload_type": "dataset",' \
+            '"access_right": "open",' \
+            '"license": "mit"' \
+          '}}' \
+          | jq -r ".id"
+        )
+
+        # Loop through downloaded assets and upload them
+        for file in assets/*; do
+          echo "Uploading $file to Zenodo..."
+          curl -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+               -F "file=@$file" \
+               "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files"
+        done
+
+      # TODO: Publish the Record (https://developers.zenodo.org/#deposition-actions)
+      # POST /api/deposit/depositions/:id/actions/publish
+
+curl -X POST \
+  "https://zenodo.org/api/deposit/depositions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+  -d '{"metadata": {"version": "$VERSION", "title": "Industrial and Commercial Electricity Tariffs in the United States", "upload_type": "dataset", "access_right": "open", "license": "mit", "creators": [{"name": "Chapin, Fletcher T.", "orcid": "0000-0002-2165-7963"},{"name": "Rao, Akshay K.", "orcid": "0000-0002-9054-476X"},{"name": "Sakthivelu, Adhithyan", "orcid": "0000-0002-3826-8112"},{"name": "Chen, Casey S."},{"name": "Mauter, Meagan S.", "orcid": "0000-0002-4932-890X"}], "related_identifiers": [{"relation": "isNewVersionOf", "identifier": "10.5281/zenodo.16739989"}]}}' \
+  | jq -r ".id"
+)
+
+curl -X POST \
+  "https://zenodo.org/api/deposit/depositions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+  -d '{"metadata": {"version": "$VERSION", "title": "Industrial and Commercial Electricity Tariffs in the United States", "upload_type": "dataset", "access_right": "open", "license": "mit", "related_identifiers": [{"relation": "isNewVersionOf", "identifier": "10.5281/zenodo.16739989"}]}}' \
+  | jq -r ".id"
+)
+
+curl -X GET "https://zenodo.org/api/records?q=conceptdoi:10.5281/zenodo.16739989" | jq -r ".hits.hits"[0]".id"

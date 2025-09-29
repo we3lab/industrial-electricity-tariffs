@@ -16,8 +16,6 @@ authors:
     given-names: "Meagan S."
     orcid: "https://orcid.org/0000-0002-4932-890X"
 title: "Industrial and Commercial Electricity Tariffs in the United States"
-version: 2025.08.01
-date-released: 2025-08-01
 type: dataset
 doi: 10.5281/zenodo.16739989
 url: "https://github.com/we3lab/industrial-electricity-tariffs"
