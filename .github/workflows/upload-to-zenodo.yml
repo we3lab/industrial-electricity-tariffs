@@ -1,7 +1,10 @@
 # modified from https://github.com/zenodo/zenodo/issues/1235
 name: Upload GitHub Release Assets to Zenodo
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
 
 jobs:
   upload-assets-to-zenodo:
