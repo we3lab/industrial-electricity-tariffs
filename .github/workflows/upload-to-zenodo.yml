@@ -42,13 +42,14 @@ jobs:
         OLD_ID=$( curl -X GET "https://zenodo.org/api/records?q=conceptdoi:10.5281/zenodo.16739989" | jq -r ".hits.hits.[0].id" )
 
         # Create a new version using that ID
-        RESPONSE=$( curl -X POST \
+        json_response=$( curl -X POST \
           "https://zenodo.org/api/deposit/depositions/$OLD_ID/actions/newversion" \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
           -d "{}"
         )
-        DEPOSITION_ID=$( $RESPONSE | jq -r ".id" )
+        echo $json_response
+        DEPOSITION_ID=$( $json_response | jq -r ".id" )
 
         echo "Deposition ID is $DEPOSITION_ID"
 
