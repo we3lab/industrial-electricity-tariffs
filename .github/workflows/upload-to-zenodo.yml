@@ -48,9 +48,7 @@ jobs:
           -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
           -d "{}"
         )
-        echo $json_response
-        DEPOSITION_ID=$( $json_response | jq -r ".id" )
-
+        DEPOSITION_ID=$( echo $json_response | jq -r ".id" )
         echo "Deposition ID is $DEPOSITION_ID"
 
         # Loop through downloaded assets and upload them
