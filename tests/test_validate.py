@@ -3,6 +3,7 @@ import glob
 import pytest
 import subprocess
 import pandas as pd
+from scripts.validate import validate_tariffs
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 data_folder_path = os.path.join("data", "validated")
@@ -25,8 +26,16 @@ def test_main():
         subprocess.run(command, check=True)
 
     # check that the script runs without error
-    command = ["python", "scripts/validate.py"]
-    subprocess.run(command, check=True)
+    validate_tariffs(
+        savefolder="data/validated/bundled/",
+        datafolder="data/merged/bundled/",
+        suffix="_bundled",
+    )
+    validate_tariffs(
+        savefolder="data/validated/delivery_only/",
+        datafolder="data/converted/delivery_only/",
+        suffix="_delivery_only",
+    )
 
     ## bundled
     # check the metadata file exists and has the number of rows fewer = # rejected tariffs
@@ -47,5 +56,3 @@ def test_main():
     old_tariffs = glob.glob(os.path.join("data", "converted", "delivery_only", "*.csv"))
     valid_tariffs = glob.glob(os.path.join("data", "validated", "delivery_only", "*.csv"))
     assert len(valid_tariffs) == len(old_tariffs) - len(reject_list)
-
-# TODO: write unit tests for validate_tariffs(), validate_tariff(), and check_continuity()

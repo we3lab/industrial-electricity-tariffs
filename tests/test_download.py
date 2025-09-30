@@ -1,6 +1,7 @@
 import os
 import pytest
 import subprocess
+import scripts.download
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 data_folder_path = os.path.join("data", "raw")
@@ -10,8 +11,7 @@ skip_all_tests = False
 @pytest.mark.skipif(skip_all_tests, reason="Exclude all tests")
 def test_download():
     # check that the script runs without error
-    command = ["python", "scripts/download.py"]
-    subprocess.run(command, check=True)
+    download.main()
 
     # check the following files are downloaded without error:
     # (1) usurdb_raw.csv.gz
