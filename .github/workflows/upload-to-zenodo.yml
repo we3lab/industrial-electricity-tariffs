@@ -28,9 +28,10 @@ jobs:
     - name: Download release assets
       run: |
         mkdir assets
-        for url in $RELEASE_ASSETS; do
+        for quoted_string in $RELEASE_ASSETS; do
+          url="${quoted_string//\"/}"
           echo "Downloading $url..."
-          curl -L -o "assets/$(basename $url)" "$url"
+          curl -L -o "assets/$(basename $url)" "$( echo $url)"
         done
     - name: Upload to Zenodo
       env:
