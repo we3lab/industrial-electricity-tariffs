@@ -1,13 +1,14 @@
 name: Test
 
 on:
+  pull_request:
   push:
     branches:
       - main
 
 jobs:
-  process-and-publish:
-    runs-on: ubuntu-latest
+  test-code-cov:
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.13

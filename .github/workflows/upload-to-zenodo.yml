@@ -1,0 +1,63 @@
+# modified from https://github.com/zenodo/zenodo/issues/1235
+name: Upload GH Release Assets to Zenodo
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  upload-assets-to-zenodo:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'Setup jq'
+      uses: dcarbone/install-jq-action@v3
+    - name: set VERSION
+      run: echo "VERSION=$(date -I | sed 's/-/./g')" >> $GITHUB_ENV
+    - name: Get release assets
+      id: get-assets
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "Fetching release assets..."
+        json_response=$( curl -s "https://api.github.com/repos/we3lab/industrial-electricity-tariffs/releases/latest")
+        RELEASE_ASSETS=($(echo $json_response | jq -c ".assets[].browser_download_url"))
+        echo "RELEASE_ASSETS=$RELEASE_ASSETS" >> $GITHUB_ENV
+    - name: Download release assets
+      run: |
+        mkdir assets
+        for quoted_string in $RELEASE_ASSETS; do
+          url="${quoted_string//\"/}"
+          echo "Downloading $url..."
+          curl -L -o "assets/$(basename $url)" "$( echo $url)"
+        done
+    - name: Upload to Zenodo
+      env:
+        ZENODO_ACCESS_TOKEN: ${{ secrets.ZENODO_ACCESS_TOKEN }}
+        VERSION: ${{ env.VERSION }}
+      run: |
+        # Get the old deposition ID
+        OLD_ID=$( curl -X GET "https://zenodo.org/api/records?q=conceptdoi:10.5281/zenodo.16739989" | jq -r ".hits.hits.[0].id" )
+
+        # Create a new version using that ID
+        json_response=$( curl -X POST \
+          "https://zenodo.org/api/deposit/depositions/$OLD_ID/actions/newversion" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+          -d "{}"
+        )
+        DEPOSITION_ID=$( echo $json_response | jq -r ".id" )
+        echo "Deposition ID is $DEPOSITION_ID"
+
+        # Loop through downloaded assets and upload them
+        for file in assets/*; do
+          echo "Uploading $file to Zenodo..."
+          curl -i "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files" \
+            -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+            -F "name=industrial-electricity-tariffs.zip" \
+            -F "file=@$file"
+        done
+
+      # TODO: Publish the Record (https://developers.zenodo.org/#deposition-actions)
+      # POST /api/deposit/depositions/:id/actions/publish
