@@ -56,7 +56,7 @@ jobs:
           echo "Uploading $file to Zenodo..."
           curl -X POST "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files" \
             -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
-            -F "name=industrial-electricity-tariffs.zip"
+            -F "name=industrial-electricity-tariffs.zip" \
             -F "file=@$file"
         done
 
