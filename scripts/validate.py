@@ -1,7 +1,5 @@
 import os
 import shutil
-import warnings
-import traceback
 import pandas as pd
 
 # change to repo parent directory
@@ -66,9 +64,7 @@ def validate_tariff(tariff_df, tariff_id, max_charges=MAX_CHARGES):
                 try:
                     assert check_continuity(slice, charge_type)
                 except AssertionError:
-                    raise ValueError(
-                        f"Tariff does not cover all hours/days of the year."
-                    )
+                    raise ValueError("Tariff does not cover all hours/days of the year.")
 
                 # Check prices are positive and below a threshold
                 try:
@@ -248,12 +244,10 @@ def validate_tariffs(
     )
 
     # save metadata to data/validated folder
-    metadata_df.to_csv(
-        "data/validated/metadata" + suffix + ".csv", index=True
-    )
+    metadata_df.to_csv("data/validated/metadata" + suffix + ".csv", index=True)
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     validate_tariffs(
         savefolder="data/validated/bundled/",
         datafolder="data/merged/bundled/",

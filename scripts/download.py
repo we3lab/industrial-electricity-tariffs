@@ -1,10 +1,10 @@
 import os
 import gzip
 import shutil
-import pandas as pd
 from urllib.request import urlretrieve
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 def main():
     # This file is too large to be included on GitHub but can be found at
@@ -36,5 +36,5 @@ def main():
     urlretrieve(metadata_url, metadata_filename)
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     main()

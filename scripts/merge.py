@@ -1,8 +1,8 @@
 import os
 import glob
 import shutil
-import openpyxl
 import pandas as pd
+
 
 def lat_str_to_float(lat_str):
     return float(lat_str[:-1])
@@ -25,9 +25,7 @@ def main(savefolder="data/merged", suffix=""):
         tariff_df = pd.read_excel(
             os.path.join("data", "raw", "WWTP_Billing.xlsx"), sheet_name=str(cwns_no)
         )
-        tariff_df.to_csv(
-            os.path.join(savefolder, f"{cwns_no}.csv"), index=False
-        )
+        tariff_df.to_csv(os.path.join(savefolder, f"{cwns_no}.csv"), index=False)
         new_entry = {
             "label": str(cwns_no),
             "state": row["State"],
@@ -45,12 +43,15 @@ def main(savefolder="data/merged", suffix=""):
         shutil.copyfile(tariff_file, os.path.join(savefolder, tariff_id))
 
     # merge metadata
-    old_metadata_df = pd.read_csv(os.path.join("data", "converted", "metadata" + suffix + ".csv"))
+    old_metadata_df = pd.read_csv(
+        os.path.join("data", "converted", "metadata" + suffix + ".csv")
+    )
     new_metadata_df = pd.DataFrame(new_metadata)
     new_metadata_df = pd.concat([old_metadata_df, new_metadata_df])
     new_metadata_df.to_csv(
         os.path.join("data", "merged", "metadata" + suffix + ".csv"), index=False
     )
+
 
 if __name__ == "__main__":
     main(savefolder=os.path.join("data", "merged", "bundled"), suffix="_bundled")

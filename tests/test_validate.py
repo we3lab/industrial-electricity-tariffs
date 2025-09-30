@@ -9,6 +9,7 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 data_folder_path = os.path.join("data", "validated")
 skip_all_tests = False
 
+
 @pytest.mark.skipif(skip_all_tests, reason="Exclude all tests")
 def test_main():
     # run the pre-scripts if data does not exist
@@ -48,11 +49,19 @@ def test_main():
     assert len(valid_tariffs) == len(old_tariffs) - len(reject_list)
 
     ## delivery only
-    old_metadata = pd.read_csv(os.path.join("data", "converted", "metadata_delivery_only.csv"))
-    valid_metadata = pd.read_csv(os.path.join(data_folder_path, "metadata_delivery_only.csv"))
-    reject_list = pd.read_csv(os.path.join(data_folder_path, "rejected_delivery_only.csv"))
+    old_metadata = pd.read_csv(
+        os.path.join("data", "converted", "metadata_delivery_only.csv")
+    )
+    valid_metadata = pd.read_csv(
+        os.path.join(data_folder_path, "metadata_delivery_only.csv")
+    )
+    reject_list = pd.read_csv(
+        os.path.join(data_folder_path, "rejected_delivery_only.csv")
+    )
     assert len(valid_metadata) == len(old_metadata) - len(reject_list)
     # check the tariff sheets have been copied to the new folder
     old_tariffs = glob.glob(os.path.join("data", "converted", "delivery_only", "*.csv"))
-    valid_tariffs = glob.glob(os.path.join("data", "validated", "delivery_only", "*.csv"))
+    valid_tariffs = glob.glob(
+        os.path.join("data", "validated", "delivery_only", "*.csv")
+    )
     assert len(valid_tariffs) == len(old_tariffs) - len(reject_list)
