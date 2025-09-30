@@ -231,7 +231,10 @@ def process_customer(openei_tariff_row):
     data_dict["units"] = "$/month"
     data_dict["Notes"] = str(openei_tariff_row["source"]) + (
         "\t" + str(openei_tariff_row["sourceparent"])
-        if not (openei_tariff_row["sourceparent"] == "" or pd.isna(openei_tariff_row["sourceparent"]))
+        if not (
+            openei_tariff_row["sourceparent"] == ""
+            or pd.isna(openei_tariff_row["sourceparent"])
+        )
         else ""
     )
     return [data_dict]

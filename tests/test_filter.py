@@ -23,26 +23,26 @@ if not os.path.exists("data/raw/usurdb_raw.csv"):
             ["Industrial", "Commercial"],
             ["Bundled", "Delivery with Standard Offer"],
             os.path.join("data", "filtered", "usurdb_bundled.csv"),
-            datetime.datetime(2023, 1, 1)
+            datetime.datetime(2023, 1, 1),
         ),
         (
             ["Industrial", "Commercial"],
             ["Delivery"],
             os.path.join("data", "filtered", "usurdb_delivery.csv"),
-            datetime.datetime(2023, 1, 1)
+            datetime.datetime(2023, 1, 1),
         ),
         (
             ["Residential"],
             ["Bundled"],
             os.path.join("data", "filtered", "usurdb_bundled.csv"),
-            datetime.datetime(2023, 1, 1)
+            datetime.datetime(2023, 1, 1),
         ),
         (
             ["Residential"],
             ["Bundled"],
             os.path.join("data", "filtered", "usurdb_residential.csv"),
-            datetime.datetime.today()
-        )
+            datetime.datetime.today(),
+        ),
     ],
 )
 def test_filter_tariffs(allowed_sectors, allowed_service_types, outpath, date_cutoff):

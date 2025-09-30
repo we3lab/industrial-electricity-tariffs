@@ -8,6 +8,7 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 data_folder_path = os.path.join("data", "merged")
 skip_all_tests = False
 
+
 @pytest.mark.skipif(skip_all_tests, reason="Exclude all tests")
 def test_main():
     # run the pre-scripts if data does not exist
@@ -25,11 +26,15 @@ def test_main():
     main(os.path.join("data", "merged", "bundled"), suffix="_bundled")
 
     # check the metadata file exists and has 100 additional rows
-    old_metadata = pd.read_csv(os.path.join("data", "converted", "metadata_bundled.csv"))
-    merged_metadata = pd.read_csv(os.path.join(data_folder_path, "metadata_bundled.csv"))
+    old_metadata = pd.read_csv(
+        os.path.join("data", "converted", "metadata_bundled.csv")
+    )
+    merged_metadata = pd.read_csv(
+        os.path.join(data_folder_path, "metadata_bundled.csv")
+    )
     assert len(merged_metadata) == len(old_metadata) + 100
 
-    # check the tariff sheets have been copied to the 
+    # check the tariff sheets have been copied to the
     old_tariffs = glob.glob(os.path.join("data", "converted", "bundled", "*.csv"))
     merged_tariffs = glob.glob(os.path.join("data", "merged", "bundled", "*.csv"))
     assert len(merged_tariffs) == len(old_tariffs) + 100
@@ -43,7 +48,12 @@ def test_lat_str_to_float(lat_str, expected):
 
 
 @pytest.mark.skipif(skip_all_tests, reason="Exclude all tests")
-@pytest.mark.parametrize("long_str, expected", [("53.4W", -53.4),])
+@pytest.mark.parametrize(
+    "long_str, expected",
+    [
+        ("53.4W", -53.4),
+    ],
+)
 def test_long_str_to_float(long_str, expected):
     result = long_str_to_float(long_str)
     assert result == expected
