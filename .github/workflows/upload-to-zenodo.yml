@@ -54,8 +54,8 @@ jobs:
         # Loop through downloaded assets and upload them
         for file in assets/*; do
           echo "Uploading $file to Zenodo..."
-          curl -X POST "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files" \
-            -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
+          curl -i "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files" \
+            -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \g
             -F "name=industrial-electricity-tariffs.zip" \
             -F "file=@$file"
         done
