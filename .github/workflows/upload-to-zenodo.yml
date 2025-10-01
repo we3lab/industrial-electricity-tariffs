@@ -31,9 +31,10 @@ jobs:
         mkdir assets
         for quoted_string in $RELEASE_ASSETS; do
           url="${quoted_string//\"/}"
-          echo "Downloading $url..."
+          echo "Downloading release asset from $url..."
           curl -L -o "assets/$(basename $url)" "$( echo $url)"
         done
+        echo "Downloading source code from ${SOURCE_CODE_URL//\"/}"
         curl -L -o "assets/source-code.zip" "${SOURCE_CODE_URL//\"/}"
     - name: Upload to Zenodo
       env:
@@ -54,6 +55,12 @@ jobs:
         )
         DEPOSITION_ID=$( echo $json_response | jq -r ".id" )
         echo "Deposition ID is $DEPOSITION_ID"
+
+        # Update version and publication date
+        curl -X PUT "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer ACCESS_TOKEN" \
+          -d "{\"metadata\": {\"version\": \"$VERSION\", \"publication_date\": \"$( date -I )\"}}"
 
         # Delete the existing files in the new version
         for file in $OLD_FILES; do
