@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "upload_type": "dataset",
+    "license": "mit",
+    "access_right": "open",
+    "creators": [
+      {
+        "name": "Chapin, Fletcher T.",
+        "affiliation": "Stanford University",
+        "orcid": "0000-0002-2165-7963"
+      },
+      {
+        "name": "Rao, Akshay K.",
+        "affiliation": "Stanford University",
+        "orcid": "0000-0002-9054-476X"
+      },
+      {
+        "name": "Sakthivelu, Adhithyan",
+        "affiliation": "Stanford University",
+        "orcid": "0000-0002-3826-8112"
+      },
+      {
+        "name": "Chen, Casey S.",
+        "affiliation": "Stanford University"
+      },
+      {
+        "name": "Mauter, Meagan S.",
+        "affiliation": "Stanford University",
+        "orcid": "0000-0002-4932-890X"
+      }
+    ],
+    "description": "We use a data format specified by Chapin et al. in 'Electricity and natural gas tariffs at United States wastewater treatment plants' that can represent all the complexities of electricity tariffs across the United States (tiered charges, multiple peak periods, daily demand charges, etc.).",
+    "publisher": "Zenodo",
+    "version": "$VERSION",
+    "publication_date": "$PUBLICATION_DATE",
+    "related_identifiers": [
+      {
+        "identifier": "https://github.com/we3lab/industrial-electricity-tariffs/tree/$VERSION",
+        "relation": "issupplementto"
+      }
+    ],
+    "title": "Industrial and Commercial Electricity Tariffs in the United States"
+  }
+}
