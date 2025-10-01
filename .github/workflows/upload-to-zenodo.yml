@@ -21,9 +21,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "Fetching release assets..."
-        json_response=$( curl -s "https://api.github.com/repos/we3lab/industrial-electricity-tariffs/releases/latest")
-        RELEASE_ASSETS=($(echo $json_response | jq -c ".assets[].browser_download_url"))
+        json_response=$( curl -s "https://api.github.com/repos/we3lab/industrial-electricity-tariffs/releases/latest" )
+        RELEASE_ASSETS=$( echo $json_response | jq -c ".assets[].browser_download_url" )
         echo "RELEASE_ASSETS=$RELEASE_ASSETS" >> $GITHUB_ENV
+        SOURCE_CODE=$( echo $json_response | jq -c ".zipball_url" )
+        echo "SOURCE_CODE_URL=$SOURCE_CODE" >> $GITHUB_ENV
     - name: Download release assets
       run: |
         mkdir assets
@@ -32,13 +34,16 @@ jobs:
           echo "Downloading $url..."
           curl -L -o "assets/$(basename $url)" "$( echo $url)"
         done
+        curl -L -o "assets/source-code.zip" "$( echo $SOURCE_CODE_URL)"
     - name: Upload to Zenodo
       env:
         ZENODO_ACCESS_TOKEN: ${{ secrets.ZENODO_ACCESS_TOKEN }}
         VERSION: ${{ env.VERSION }}
       run: |
         # Get the old deposition ID
-        OLD_ID=$( curl -X GET "https://zenodo.org/api/records?q=conceptdoi:10.5281/zenodo.16739989" | jq -r ".hits.hits.[0].id" )
+        json_response=$( curl -X GET "https://zenodo.org/api/records?q=conceptdoi:10.5281/zenodo.16739989")
+        OLD_ID=$( echo $json_response | jq -r ".hits.hits.[0].id" )
+        OLD_FILES=$( echo $json_response | jq -c ".hits.hits.[0].files[].id" )
 
         # Create a new version using that ID
         json_response=$( curl -X POST \
@@ -50,12 +55,18 @@ jobs:
         DEPOSITION_ID=$( echo $json_response | jq -r ".id" )
         echo "Deposition ID is $DEPOSITION_ID"
 
+        # Delete the existing files in the new version
+        for file in $OLD_FILES; do
+          echo "Deleting $file from old Zenodo release..."
+          curl -X DELETE "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files/$file" \
+            -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN"
+        done
+
         # Loop through downloaded assets and upload them
         for file in assets/*; do
           echo "Uploading $file to Zenodo..."
           curl -i "https://zenodo.org/api/deposit/depositions/$DEPOSITION_ID/files" \
             -H "Authorization: Bearer $ZENODO_ACCESS_TOKEN" \
-            -F "name=industrial-electricity-tariffs.zip" \
             -F "file=@$file"
         done
 
