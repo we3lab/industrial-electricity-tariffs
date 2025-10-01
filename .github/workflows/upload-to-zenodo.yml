@@ -34,7 +34,7 @@ jobs:
           echo "Downloading $url..."
           curl -L -o "assets/$(basename $url)" "$( echo $url)"
         done
-        curl -L -o "assets/source-code.zip" "$( echo $SOURCE_CODE_URL)"
+        curl -L -o "assets/source-code.zip" "${SOURCE_CODE_URL//\"/}"
     - name: Upload to Zenodo
       env:
         ZENODO_ACCESS_TOKEN: ${{ secrets.ZENODO_ACCESS_TOKEN }}
