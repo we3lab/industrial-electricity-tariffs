@@ -18,7 +18,6 @@ jobs:
     - name: Install Dependencies
       run: pip install -r requirements.txt
     - name: Test with pytest
-      shell: bash -el {0}
       run: |
         python -m pytest --cov-report xml --cov=scripts tests/ -vv
         codecov -t ${{ secrets.CODECOV_TOKEN }}
