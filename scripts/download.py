@@ -9,7 +9,7 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 def main():
     # This file is too large to be included on GitHub but can be found at
     # https://openei.org/wiki/Utility_Rate_Database
-    url = "https://openei.org/apps/USURDB/download/usurdb.csv.gz"
+    url = "https://apps.openei.org/USURDB/download/usurdb.csv.gz"
     filename = os.path.join("data", "raw", "usurdb_raw.csv.gz")
     outpath = os.path.join("data", "raw", "usurdb_raw.csv")
     urlretrieve(url, filename)
