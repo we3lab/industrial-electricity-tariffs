@@ -17,34 +17,37 @@ MAX_CHARGES = {
 
 
 def check_continuity(df, charge_type):
-    if charge_type == "customer" or "demand":
+    # Customer charges have no time windows; demand charges may deliberately
+    # apply only during a subset of the year. Energy must cover the whole year.
+    if charge_type in ("customer", "demand"):
         return True
 
-    month_start = 1
-    day_start = 0
-    hour_start = 0
+    # Extract once; avoid constructing 84 intermediate DataFrames per tariff.
+    windows = list(
+        df[
+            ["month_start", "month_end", "weekday_start", "weekday_end", "hour_start", "hour_end"]
+        ].itertuples(index=False, name=None)
+    )
+    for month in range(1, 13):
+        for weekday in range(7):
+            hours = sorted(
+                (hour_start, hour_end)
+                for month_start, month_end, weekday_start, weekday_end, hour_start, hour_end in windows
+                if month_start <= month <= month_end
+                and weekday_start <= weekday <= weekday_end
+            )
 
-    while month_start < 13:
-        row = df[
-            (df["month_start"] <= month_start)
-            & (df["month_end"] >= month_start)
-            & (df["weekday_start"] <= day_start)
-            & (df["month_end"] >= day_start)
-            & (df["hour_start"] <= hour_start)
-            & (df["hour_end"] >= hour_start)
-        ]
-        if len(df.columns) == 0:
-            return False
-
-        hour_start = row[0, "hour_end"]
-
-        if hour_start == 24:
-            hour_start = 0
-            day_start += 1
-
-        if day_start == 7:
-            day_start = 0
-            month_start += 1
+            # Merge hour intervals rather than walking dataframe positions.
+            # Endpoints are half-open: [hour_start, hour_end).
+            covered_to = 0
+            for hour_start, hour_end in hours:
+                if hour_start > covered_to:
+                    return False
+                covered_to = max(covered_to, hour_end)
+                if covered_to >= 24:
+                    break
+            if covered_to < 24:
+                return False
 
     return True
 
