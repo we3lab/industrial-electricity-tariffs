@@ -17,7 +17,7 @@ MAX_CHARGES = {
 
 
 def check_continuity(df, charge_type):
-    if charge_type == "customer" or "demand":
+    if charge_type in ("customer", "demand"):
         return True
 
     month_start = 1
